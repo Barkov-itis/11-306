@@ -1,0 +1,23 @@
+$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy - формат хранения пароля
+
+
+
+$2a$[cost]$[22 character salt][31 character hash]
+$2a$10$[N9qo8uLOickgx2ZMRZoMye][IjZAgcfl7p92ldGxad68LJZdL17lhWy]
+
+1) при регистрации написали пароль qwerty123
+2) метод библитеки BCrypt придумывает рандомную строку и берет от нее хеш - соль
+(N9qo8uLOickgx2ZMRZoMye)
+3) соединяет пароль + соль = "qwerty123N9qo8uLOickgx2ZMRZoMye" - новая строка пароля.
+4) берет хеш от новой строки (qwerty123N9qo8uLOickgx2ZMRZoMye) = IjZAgcfl7p92ldGxad68LJZdL17lhWy
+5) сохраняет в БД соль и конечный хеш = $2a$10$[salt][hash]
+                                        $2a$10$[N9qo8uLOickgx2ZMRZoMye][IjZAgcfl7p92ldGxad68LJZdL17lhWy]
+
+Проверка:
+1) Из БД вытаскиевает строку - $2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy
+2) Пароль, полученный при авторизации соеднияет с солью из строки выше. !qwerty123N9qo8uLOickgx2ZMRZoMye
+3) Берет хеш от новой строки пароля + соли = Z0fhkNG.........
+4) Сравнивает получившейся хеш в п.3 с хешем из бд.
+
+
+
