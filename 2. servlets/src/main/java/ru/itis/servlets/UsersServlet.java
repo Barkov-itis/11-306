@@ -2,7 +2,9 @@ package ru.itis.servlets;
 
 import com.sun.net.httpserver.HttpServer;
 import ru.itis.models.User;
+import ru.itis.repositories.UsersRepository;
 
+import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -27,47 +29,38 @@ public class UsersServlet extends HttpServlet {
 
     private List<User> users;
 
+    private UsersRepository usersRepository;
+
     @Override
-    public void init() throws ServletException {
+    public void init(ServletConfig config) throws ServletException {
 
         users = new ArrayList<>();
         User user1 = User.builder()
                 .id(1L)
                 .firstName("Danil")
                 .lastName("Smirnov")
-                .age(22)
+//                .age(22)
                 .build();
 
         User user2 = User.builder()
                 .id(2L)
                 .firstName("Yzel")
                 .lastName("Sysel")
-                .age(15)
+//                .age(15)
                 .build();
 
         User user3 = User.builder()
                 .id(3L)
                 .firstName("Kirill")
                 .lastName("Lapshov")
-                .age(30)
+//                .age(30)
                 .build();
 
         users.add(user1);
         users.add(user2);
         users.add(user3);
 
-        try {
-            Class.forName("org.postgresql.Driver");
-        } catch (ClassNotFoundException e) {
-            throw new IllegalStateException();
-        }
-
-        try {
-            Connection connection = DriverManager.getConnection(DB_URL, DB_USERNAME, DB_PASSWORD);
-            //usersRepos = new UsersRepositoryJdbcImpl(connection);
-        } catch (SQLException e) {
-            throw new IllegalStateException(e);
-        }
+        usersRepository = (UsersRepository) config.getServletContext().getAttribute("usersRep");
     }
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -108,7 +101,11 @@ public class UsersServlet extends HttpServlet {
 //        writer.write(resultHtml.toString());
 
 //        request.getRequestDispatcher("html/profile.html").forward(request, response);
-        request.setAttribute("usersForJsp", users);
+        try {
+            request.setAttribute("usersForJsp", usersRepository.findAll());
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
         request.getRequestDispatcher("/jsp/users.jsp").forward(request, response);
     }
 
