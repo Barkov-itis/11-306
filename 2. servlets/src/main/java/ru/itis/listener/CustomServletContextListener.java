@@ -1,12 +1,11 @@
 package ru.itis.listener;
 
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
+import ru.itis.repositories.FilesRepository;
+import ru.itis.repositories.FilesRepositoryImpl;
 import ru.itis.repositories.UsersRepository;
 import ru.itis.repositories.UsersRepositoryJdbcImpl;
-import ru.itis.services.SignUpService;
-import ru.itis.services.SignUpServiceImpl;
-import ru.itis.services.UsersService;
-import ru.itis.services.UsersServiceImpl;
+import ru.itis.services.*;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
@@ -35,6 +34,9 @@ public class CustomServletContextListener implements ServletContextListener {
         servletContext.setAttribute("signUpService", signUpService);
         UsersService usersService = new UsersServiceImpl(usersRepository);
         servletContext.setAttribute("usersService", usersService);
+        FilesRepository filesRepository = new FilesRepositoryImpl(dataSource);
+        FilesService filesService = new FilesServiceImpl(filesRepository);
+        servletContext.setAttribute("filesUploadService", filesService);
     }
 
     @Override
